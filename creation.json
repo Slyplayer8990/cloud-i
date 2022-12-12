@@ -1,0 +1,9 @@
+{
+    "instance_name": "kali-test",
+    "image": "kali",
+    "username": "kali",
+    "storage": 20,
+    "memory": 2048,
+    "vcpu": 2,
+    "access_key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCwPCpsGLhNlgUocYpD6SUdxW/eNPszW8Ns2MeMg5Gn9Azf9tyWxPppJ9J3XTk3VhtdA1iovgZ+QNUiTmLOdxNGfC1D81P8JKy9BSFNGP67S3t5xAd+Ve72mP4EHpdE+Gm8/BAP/a7OOD+rhpiXXJgiPvcqznvNgbNROXYUTXofM/RhskOy6WWtkYaKpQzd2xvCr9/gOUVEyAPlfQVDJC9EKGOzKufnUu9irDuof1fBVdyp0XQGHAHWWhwj+VXZlGv00rjy+l2tfvS24cadggnvgIv5nhvx3NLKepIpvGSc029jkkqSqHwaOsVIhJABEHQ/cFTwbV6VxYxXlcyZef+ZeM/BxMpiEoc1w8n3zrk+yQ3EKlxuIXcNqWwWUdnJtxfgWdls1OqcnFsG+3pfuzFPmmc7F8P/qk/ODc2Yt2ZTxc20CYvzI0Rc1UVJwVHWGlFjkpeFh/vwpmKSK7ytTOsUeoHROPgqxURI8DLIpvt5yE8jiM+q2Cnqoja4fNUTX/c= u0_a209@localhost"
+}
