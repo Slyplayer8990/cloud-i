@@ -1,8 +1,11 @@
-from flask import Flask, request, jsonify  
+from flask import Flask, request, jsonify, send_file
+import os
 import dotenv
 import json
 import sys 
+import schedule
 import mysql.connector
+import machines
 conndb = mysql.connector.connect(
     auth_plugin="mysql_native_password",
     host="localhost",
@@ -12,7 +15,6 @@ conndb = mysql.connector.connect(
     buffered=True
 )
 sys.path.insert(0, "./modules")
-import machines
 app = Flask(__name__)
 @app.route("/cloudy/api/machines/create",methods=["POST"])
 def creation():
@@ -79,4 +81,4 @@ def termination():
 def k3c_metadata():
     print(request.headers["User-Agent"])
     return {hello}
-app.run(host="0.0.0.0", port="8080")
+app.run(host="0.0.0.0", port="47470")
