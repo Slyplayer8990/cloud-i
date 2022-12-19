@@ -1,20 +1,13 @@
 from flask import Flask, request, jsonify, send_file
 import os
-import dotenv
 import json
 import sys 
-import schedule
-import mysql.connector
-import machines
-conndb = mysql.connector.connect(
-    auth_plugin="mysql_native_password",
-    host="localhost",
-    user="cloudy",
-    password="cloudy123",
-    database="cloudy",
-    buffered=True
-)
 sys.path.insert(0, "./modules")
+import schedule
+import time
+import sqlite3
+import machines
+conndb = sqlite3.connect('/var/lib/cloudy/cloudy.db')
 app = Flask(__name__)
 @app.route("/cloudy/api/machines/create",methods=["POST"])
 def creation():
@@ -80,5 +73,16 @@ def termination():
 @app.route("/cloudy/api/k3c/seeds/<cluster_name>/maestro/meta-data", methods=["GET"])
 def k3c_metadata():
     print(request.headers["User-Agent"])
-    return {hello}
+    return {"hello"}
+@app.route("/cloudy/api/k3c/seeds/<cluster_name>/maestro/user-data", methods=["GET"])
+def k3c_userdata():
+    print(request.headers["User-Agent"])
+    cursor = conndb.cursor()
+    cursor.execute('UPDATE k3c_clusters SET cluster_ip="' + request.remote_addr + '" WHERE cluster_name="' + cluster_name + '"')
+    return {"hello"}
+@app.route("/cloudy/api/k3c/seeds/<cluster_name>/maestro/vendor-data", methods=["GET"])
+def k3c_vendordata():
+    print(request.headers["User-Agent"])
+    return """vendor_data:
+    enabled: False"""
 app.run(host="0.0.0.0", port="47470")

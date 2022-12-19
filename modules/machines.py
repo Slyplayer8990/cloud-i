@@ -6,14 +6,15 @@ from venv import create
 import libvirt
 import shutil
 import os
-import mysql.connector
-conndb = mysql.connector.connect(
-     host="localhost",
-     user="cloudy",
-     password="cloudy123",
-     database="cloudy",
-     auth_plugin="mysql_native_password"
-)
+import sqlite3
+conndb = sqlite3.connect('/var/lib/cloudy/cloudy.db')
+def initdb():
+     cursor = conndb.cursor()
+     cursor.execute('CREATE TABLE IF NOT EXISTS seeds (name TEXT, userdata TEXT, metadata TEXT)')
+     cursor.execute('CREATE TABLE IF NOT EXISTS machines (name TEXT, uuid TEXT, memory TEXT, vcpu TEXT, storage TEXT, image TEXT, user TEXT, ssh_key TEXT)')
+     cursor.close()
+     conndb.commit()
+initdb()
 conn = libvirt.open("qemu:///system")
 userdata = None
 metadata = None
@@ -101,12 +102,12 @@ def create(instance_name, image_name, username, storage, memory, vcpu, user_prov
           domain.create()     
      except:
           raise Exception("We are ashamed to say but...")
+     cursor = conndb.cursor()
+     cursor.execute('INSERT INTO machines VALUES (' + '"' + instance_name + '","' + num + '","' + memory + '","' + vcpu + '","' + storage + '","' + image + '","' + username + '","' + user_providen_ssh_key + '");')
 def terminate(instance_name):
      dom = conn.lookupByName(instance_name)
      dom.destroy()
-     dom.undefine()
-     os.chdir("/var/lib/cloudy/machines")
-     os.remove(instance_name + ".raw")
+     dom.undefine(delete_storage=True)
      cursor = conndb.cursor()
      cursor.execute('DELETE FROM seeds WHERE instance_name="' + instance_name + '";')
 def stop(instance_name):
