@@ -6,21 +6,21 @@ from venv import create
 import libvirt
 import shutil
 import os
-import sqlite3
-conndb = sqlite3.connect('/var/lib/cloudy/cloudy.db')
+import mysql.connector
+cnx = mysql.connector.connect(user="cloudy", password="cloudy123", host="localhost", database="cloudy", buffered=True) 
 def initdb():
-     cursor = conndb.cursor()
+     cursor = cnx.cursor()
      cursor.execute('CREATE TABLE IF NOT EXISTS seeds (name TEXT, userdata TEXT, metadata TEXT)')
-     cursor.execute('CREATE TABLE IF NOT EXISTS machines (name TEXT, uuid TEXT, memory TEXT, vcpu TEXT, storage TEXT, image TEXT, user TEXT, ssh_key TEXT)')
+     cursor.execute('CREATE TABLE IF NOT EXISTS machines (name TEXT, uuid TEXT, memory TEXT, vcpu TEXT, storage TEXT, image TEXT, user TEXT, ssh_key TEXT, status TEXT)')
      cursor.close()
-     conndb.commit()
+     cnx.commit()
 initdb()
 conn = libvirt.open("qemu:///system")
 userdata = None
 metadata = None
 seedlocation = None
 def createseed(name, user, ssh_key):
-     cursor = conndb.cursor()
+     cursor = cnx.cursor()
      userdata = """#cloud-config
 groups:
   - admingroup: [root,sys]
@@ -41,7 +41,7 @@ network-interfaces: |
      """
      cursor.execute('INSERT INTO seeds VALUES (' + '"' + name + '","' + userdata + '","' + metadata + '");')
      cursor.close()
-     conndb.commit()
+     cnx.commit()
 def create(instance_name, image_name, username, storage, memory, vcpu, user_providen_ssh_key):
      uuidnum = uuid.uuid4()
      num = str(uuidnum)
@@ -102,13 +102,13 @@ def create(instance_name, image_name, username, storage, memory, vcpu, user_prov
           domain.create()     
      except:
           raise Exception("We are ashamed to say but...")
-     cursor = conndb.cursor()
+     cursor = cnx.cursor()
      cursor.execute('INSERT INTO machines VALUES (' + '"' + instance_name + '","' + num + '","' + memory + '","' + vcpu + '","' + storage + '","' + image + '","' + username + '","' + user_providen_ssh_key + '");')
 def terminate(instance_name):
      dom = conn.lookupByName(instance_name)
      dom.destroy()
      dom.undefine(delete_storage=True)
-     cursor = conndb.cursor()
+     cursor = cnx.cursor()
      cursor.execute('DELETE FROM seeds WHERE instance_name="' + instance_name + '";')
 def stop(instance_name):
      try:

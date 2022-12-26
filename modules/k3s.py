@@ -1,10 +1,10 @@
 import libvirt
-import sqlite3
+import mysql.connector
 import shutil
 import time
 import uuid
+cnx = mysql.connector.connect(user="cloudy", password="cloudy123", host="127.0.0.1", database="cloudy", buffered=True)
 def initdb():
-  cnx = sqlite3.connect("cloudy.db")
   cursor = cnx.cursor()
   cursor.execute('CREATE TABLE IF NOT EXISTS k3s_clusters (cluster_name TEXT, numberof_nodes INTEGER, cluster_ip TEXT, cluster_token TEXT)')
   cursor.execute('CREATE TABLE IF NOT EXISTS k3s_nodes (node_name TEXT, userdata TEXT, metadata TEXT, cluster_name TEXT)')
@@ -13,7 +13,6 @@ def initdb():
   cnx.close()
 initdb()
 def getclusterip(name):
-  cnx = sqlite3.connect("cloudy.db")
   cursor = cnx.cursor()
   cursor.execute('SELECT cluster_ip FROM k3s_clusters WHERE cluster_name = "' + name + '"')
   ip = cursor.fetchone()[2]
@@ -21,15 +20,12 @@ def getclusterip(name):
   cnx.close()
   return ip
 def getclustertoken(name):
-  cnx = sqlite3.connect("cloudy.db")
   cursor = cnx.cursor()
   cursor.execute('SELECT cluster_token FROM k3s_clusters WHERE cluster_name = "' + name + '"')
   token = cursor.fetchone()[3]
   cursor.close()
   cnx.close()
   return token
-
-cnx = sqlite3.connect("cloudy.db")
 try:
   cnx2 = libvirt.open("qemu:///system")
 except:
@@ -119,7 +115,7 @@ network-interfaces: |
   print("Master node created!")
   time.sleep(20)
 
-  for i in range(1, numberofnodes):
+  for i in range(1, numberofnodes - 1):
     node_name = name + "_node_" + str(i)
     metadata = """local-hostname: """ + node_name + """
 network-interfaces: |
@@ -149,8 +145,8 @@ runcmd:
     nodexml = """<domain type='qemu'>
       <name>""" + node_name + """</name>
       <uuid>""" + num + """ </uuid>
-      <memory unit="MB">""" + memory + """</memory>
-      <vcpu>""" + vcpu + """</vcpu>
+      <memory unit="MB">512</memory>
+      <vcpu>1</vcpu>
       <os>
         <type>hvm</type>
         <boot dev='hd'/>
