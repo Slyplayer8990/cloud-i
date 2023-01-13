@@ -133,5 +133,4 @@ def restart(instance_name):
 #stop("kali-linux-machine-test")
 #start("kali-linux-machine-test")
 #createseed("machine", "admin","ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDHaf/53RtN8zX9GayeXbhiw+2LfjRfZKYo1VpsCO1SuRgudaIxtxWaK06QJAz50CakkaXR1WFl52wr9jxYrfswfoS3tggLvK8fHiW06qj63T2K2VJd1nyzaTui5+ZPaMDw5suCL1QfXYQm4hkV5BqGe4456TWSuPetKAox/RH5vECXM6JAg76ASacUtu2ID8pOh07/4ci5x/RCgYIx/qajOOJzdE4OVCpgnd7dawBqf0THpAudtFQCZqzVi+ZcqsKaUBqxM0wCNm2a4LTdBfVA2RjWHv6HSONgMZZSruniNSSMhbgO5wjnb9w+nj/JO2b8uNtwc96/KWDGUhVCR8XMfKjlZF/y4/dmvX4hBsyOASq8tHYurZg4kxjhVffxQk0IkLk3EKxM580YC1D4eZCU8oX5RlnXGWLwOucipQH6eEP3WX4y+rCQ94terrgSJAmjer1qPtC6Z4pvBcSlgfl3tZyJYomVX4qEXy6XQBXv7+EBNPnb5cI6nVrbx0cibpM= sophia@sophia-HP-Laptop-15-db1xxx")
-print("Succesfull")
 
