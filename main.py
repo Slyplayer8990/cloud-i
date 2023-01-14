@@ -85,4 +85,13 @@ def k3c_vendordata():
     print(request.headers["User-Agent"])
     return """vendor_data:
     enabled: False"""
+@app.route("/cloudy/api/s2/<user>/<bucket>/", methods["GET", "POST"])
+def file_operations(user,bucket):
+    if request.method == "POST":
+        user = request.headers["Username"]
+              
+        
+
+
+
 app.run(host="0.0.0.0", port="47470")
