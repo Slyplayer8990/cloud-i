@@ -6,4 +6,4 @@ And you can manage these things however you want(REST API, WEB interface, termin
 ## How to setup cloud-e with scripts?
 This is so easy to install and setup cloud-e on your system.
 Just ``` cd ``` into "scripts" directory and run the script that corrects with the name of your distro.
-##How to setup cloud-e with ubuntu installation?
+
