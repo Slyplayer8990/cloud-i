@@ -1,3 +1,4 @@
+import jwt
 def login(request, cnx, table):
     user = request.headers["Username"]
     password = request.headers["Password"]
@@ -7,4 +8,3 @@ def login(request, cnx, table):
     autheduser = result[0]
     authedpassword = result[1]
     if autheduser and authedpassword:
-        
