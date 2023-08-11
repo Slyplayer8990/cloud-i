@@ -98,7 +98,7 @@ def k3c_vendordata():
 @app.route("/cloudy/api/s2/<user>/<bucket>/", methods=["GET", "POST"])
 def file_operations(user,bucket):
     if request.method == "POST":
-        user = request.headers["Username"]
+        user = request.headers["Cookies"]
 
 
 
