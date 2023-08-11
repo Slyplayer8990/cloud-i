@@ -9,6 +9,16 @@ import sqlite3
 import machines
 conndb = sqlite3.connect('/var/lib/cloudy/cloudy.db')
 app = Flask(__name__)
+@app.route("/cloudy/api/login",methods=["POST"])
+def login():
+    try:
+        username=request.json["username"]
+        password=request.json["password"]
+        cursor= conndb.cursor()
+        cursor.execute('SELECT * FROM users WHERE username="' + username + '" AND password="' + password + '"')
+    except:
+        return {"status": "failed"}
+
 @app.route("/cloudy/api/machines/create",methods=["POST"])
 def creation():
     if ("instance_name" in request.json) and ("image" in request.json) and ("username" in request.json) and ("storage" in request.json) and ("memory" in request.json) and ("vcpu" in request.json) and ("access_key" in request.json):
@@ -75,7 +85,7 @@ def k3c_metadata():
     print(request.headers["User-Agent"])
     return {"hello"}
 @app.route("/cloudy/api/k3c/seeds/<cluster_name>/maestro/user-data", methods=["GET"])
-def k3c_userdata():
+def k3c_userdata(cluster_name):
     print(request.headers["User-Agent"])
     cursor = conndb.cursor()
     cursor.execute('UPDATE k3c_clusters SET cluster_ip="' + request.remote_addr + '" WHERE cluster_name="' + cluster_name + '"')
@@ -85,12 +95,10 @@ def k3c_vendordata():
     print(request.headers["User-Agent"])
     return """vendor_data:
     enabled: False"""
-@app.route("/cloudy/api/s2/<user>/<bucket>/", methods["GET", "POST"])
+@app.route("/cloudy/api/s2/<user>/<bucket>/", methods=["GET", "POST"])
 def file_operations(user,bucket):
     if request.method == "POST":
         user = request.headers["Username"]
-              
-        
 
 
 
