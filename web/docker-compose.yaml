@@ -9,6 +9,7 @@ services:
       MYSQL_PASSWORD: cloudy123
     ports:
       - "3306:3306"
+    restart: always
   php:
     image: cloudy-php
     ports:
