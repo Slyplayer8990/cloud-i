@@ -91,7 +91,7 @@ def k3c_metadata():
 def k3c_userdata(cluster_name):
     print(request.headers["User-Agent"])
     cursor = conndb.cursor()
-    cursor.execute('UPDATE k3c_clusters SET cluster_ip="' + request.remote_addr + '" WHERE cluster_name="' + cluster_name + '"')
+    cursor.execute('UPDATE k3c_clusters SET cluster_ip=? WHERE cluster_name=?', (request.remote_addr, cluster_name))
     return {"hello"}
 @app.route("/cloudy/api/k3c/seeds/<cluster_name>/maestro/vendor-data", methods=["GET"])
 def k3c_vendordata():
