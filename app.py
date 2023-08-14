@@ -15,16 +15,16 @@ def login():
         username=request.json["username"]
         password=request.json["password"]
         cursor= conndb.cursor()
-        cursor.execute('SELECT * FROM users WHERE username="' + username + '" AND password="' + password + '"')
+        cursor.execute(('SELECT * FROM users WHERE username=? AND password=?'), (username, password))
     except:
         return {"status": "failed"}
 
 @app.route("/cloudy/api/machines/create",methods=["POST"])
 def creation():
- requiredjson = set(["instance_name", "image", "username", "storage", "memory", "vcpu", "access_key"])
-setrequest = set(request.json)
+    requiredjson = set(["instance_name", "image", "username", "storage", "memory", "vcpu", "access_key"])
+    setrequest = set(request.json)
 
-if requiredjson.issubset(setrequest):
+    if requiredjson.issubset(setrequest):
         instance_name = str(request.json["instance_name"])
         image = str(request.json["image"])
         username = str(request.json["username"])
@@ -33,7 +33,7 @@ if requiredjson.issubset(setrequest):
         vcpu = str(request.json["vcpu"])
         access_key = str(request.json["access_key"])
         cursor = conndb.cursor()
-        cursor.execute('SELECT * FROM machines WHERE instance_name="' + request.json["instance_name"] + '"')
+        cursor.execute('SELECT * FROM machines WHERE instance_name=?', (instance_name,))
         result = cursor.fetchone()
         if not result is None:
             return {"alert": "Instance already exists!"}, 403
@@ -47,7 +47,7 @@ if requiredjson.issubset(setrequest):
 def seeds_userdata(instance_name):
     print("User-data agent is:" + request.headers["User-Agent"])
     cursor = conndb.cursor()
-    cursor.execute('SELECT * FROM seeds WHERE instance_name="' + instance_name + '"')
+    cursor.execute('SELECT * FROM seeds WHERE instance_name=?', (instance_name,))
     result = cursor.fetchone()
     if not result is None:
         user_data = result[1]
@@ -60,7 +60,7 @@ def seeds_metadata(instance_name):
     print("User-data agent is:" + request.headers["User-Agent"])
     conndb.reconnect()
     cursor = conndb.cursor()
-    cursor.execute('SELECT * FROM seeds WHERE instance_name="' + instance_name + '"')
+    cursor.execute('SELECT * FROM seeds WHERE instance_name=?', (instance_name,))
     result = cursor.fetchone()
     if not result is None:
         meta_data = result[2]

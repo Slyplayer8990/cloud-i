@@ -6,8 +6,8 @@ from venv import create
 import libvirt
 import shutil
 import os
-import mysql.connector
-cnx = mysql.connector.connect(user="cloudy", password="cloudy123", host="localhost", database="cloudy", buffered=True) 
+import sqlite3
+cnx = sqlite3.connect('/var/lib/cloudy/cloudy.db')
 def initdb():
      cursor = cnx.cursor()
      cursor.execute('CREATE TABLE IF NOT EXISTS seeds (name TEXT, userdata TEXT, metadata TEXT)')

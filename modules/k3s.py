@@ -1,9 +1,10 @@
 import libvirt
-import mysql.connector
+import sqlite3
 import shutil
 import time
 import uuid
-cnx = mysql.connector.connect(user="cloudy", password="cloudy123", host="127.0.0.1", database="cloudy", buffered=True)
+import os
+cnx = sqlite3.connect('/var/lib/cloudy/cloudy.db')
 def initdb():
   cursor = cnx.cursor()
   cursor.execute('CREATE TABLE IF NOT EXISTS k3s_clusters (cluster_name TEXT, numberof_nodes INTEGER, cluster_ip TEXT, cluster_token TEXT)')
@@ -140,8 +141,9 @@ runcmd:
     cnx.commit()
     cursor.close()
     image = "/var/lib/cloudy/images/ubuntu-k3c-node.raw"
-    nodelocation = "/var/lib/cloudy/machines/" + node_name + ".raw"
+    nodelocation = "/var/lib/cloudy/machines/ubuntu-k3c.raw"
     shutil.copyfile(image, nodelocation)
+    os.rename(nodelocation, node_name + ".raw")
     nodexml = """<domain type='qemu'>
       <name>""" + node_name + """</name>
       <uuid>""" + num + """ </uuid>
