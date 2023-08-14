@@ -21,7 +21,10 @@ def login():
 
 @app.route("/cloudy/api/machines/create",methods=["POST"])
 def creation():
-    if ("instance_name" in request.json) and ("image" in request.json) and ("username" in request.json) and ("storage" in request.json) and ("memory" in request.json) and ("vcpu" in request.json) and ("access_key" in request.json):
+ requiredjson = set(["instance_name", "image", "username", "storage", "memory", "vcpu", "access_key"])
+setrequest = set(request.json)
+
+if requiredjson.issubset(setrequest):
         instance_name = str(request.json["instance_name"])
         image = str(request.json["image"])
         username = str(request.json["username"])
