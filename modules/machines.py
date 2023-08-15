@@ -8,6 +8,7 @@ import shutil
 import os
 import sqlite3
 cnx = sqlite3.connect('/var/lib/cloudy/cloudy.db')
+import xml.etree.ElementTree as ET
 def initdb():
      cursor = cnx.cursor()
      cursor.execute('CREATE TABLE IF NOT EXISTS seeds (name TEXT, userdata TEXT, metadata TEXT)')
@@ -39,7 +40,7 @@ network-interfaces: |
      auto eth0
      iface eth0 inet dhcp
      """
-     cursor.execute('INSERT INTO seeds VALUES (' + '"' + name + '","' + userdata + '","' + metadata + '");')
+     cursor.execute('INSERT INTO seeds VALUES (?,?,?);', (name, userdata, metadata))
      cursor.close()
      cnx.commit()
 def create(instance_name, image_name, username, storage, memory, vcpu, user_providen_ssh_key):
@@ -51,65 +52,71 @@ def create(instance_name, image_name, username, storage, memory, vcpu, user_prov
      shutil.copyfile(source, machinelocation) 
      os.system("qemu-img resize " + machinelocation + " " + storage + "G")
      createseed(instance_name, username, user_providen_ssh_key)
-     xmlconfig = """<domain type='qemu'>
-     <name>""" + instance_name + """</name>
-     <uuid>""" + num + """ </uuid>
-     <memory unit="MB">""" + memory + """</memory>
-     <vcpu>""" + vcpu + """</vcpu>
-     <os>
-          <type>hvm</type>
-	     <boot dev='hd'/> 
-          <smbios mode='sysinfo'/>
-	</os>
-     <sysinfo type='smbios'>
-     <bios>
-          <entry name='vendor'>CLOUDY</entry>
-     </bios>
-     <system>
-          <entry name='manufacturer'>Cloudy</entry>
-          <entry name='product'>Cloudy Virtual Machine Delivery</entry>
-          <entry name='version'>1.0.0</entry>
-          <entry name='serial'>ds=nocloud-net;s=http://192.168.122.1:8080/cloudy/api/machines/seeds/""" + instance_name + "/" + """</entry>
-     </system>
-     </sysinfo>
-     <clock offset='utc'/>
-     <on_poweroff>destroy</on_poweroff>
-     <on_reboot>restart</on_reboot>
-     <on_crash>restart</on_crash>
-     <devices>
-          <emulator>/usr/bin/qemu-system-x86_64</emulator>
-          <disk type='file' device='disk'>
-               <source file='""" + machinelocation + """'/>
-               <driver name='qemu' type='raw'/>
-               <target dev='hda'/>
-          </disk>
-          <interface type='bridge'>
-               <source bridge='virbr0'/>
-               <model type='virtio'/>
-               <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
-          </interface>
-          <input type='mouse' bus='ps2'/>
-          <graphics type='vnc' listen='127.0.0.1'/>
-          <serial type="pty">
-               <target type="isa-serial" port="0">
-               <model name="isa-serial"/>
-               </target>
-          </serial>
-     </devices>
-     </domain>"""
+     root = ET.Element("domain", type="qemu")
+     name1 = ET.SubElement(root, "name")
+     name1.text = instance_name
+     uuid1 = ET.SubElement(root, "uuid")
+     uuid1.text = num
+     memory1 = ET.SubElement(root, "memory", unit="MB")
+     memory1.text = memory
+     vcpu1 = ET.SubElement(root, "vcpu")
+     vcpu1.text = vcpu
+     os1 = ET.SubElement(root, "os")
+     type1 = ET.SubElement(os1, "type")
+     type1.text = "hvm"
+     boot = ET.SubElement(os1, "boot", dev="hd")
+     sysinfo = ET.SubElement(root, "sysinfo", type="smbios")
+     bios = ET.SubElement(sysinfo, "bios")
+     entry1 = ET.SubElement(bios, "entry", name="vendor")
+     entry1.text = "CLOUDY"
+     system = ET.SubElement(sysinfo, "system")
+     entry2 = ET.SubElement(system, "entry", name="manufacturer")
+     entry2.text = "Cloudy"
+     entry3 = ET.SubElement(system, "entry", name="product")
+     entry3.text = "Cloudy Virtual Machine Delivery"
+     entry4 = ET.SubElement(system, "entry", name="version")
+     entry4.text = "1.0.0"
+     entry5 = ET.SubElement(system, "entry", name="serial")
+     entry5.text = "ds=nocloud-net;s=http://http://192.168.122.1:8080/cloudy/api/machines/seeds/" + instance_name + "/"
+     clock = ET.SubElement(root, "clock", offset="utc")
+     on_poweroff = ET.SubElement(root, "on_poweroff")
+     on_poweroff.text = "destroy"
+     on_reboot = ET.SubElement(root, "on_reboot")
+     on_reboot.text = "restart"
+     on_crash = ET.SubElement(root, "on_crash")
+     on_crash.text = "restart"
+     devices = ET.SubElement(root, "devices")
+     emulator = ET.SubElement(devices, "emulator")
+     emulator.text = "/usr/bin/qemu-system-x86_64"
+     disk = ET.SubElement(devices, "disk", type="file", device="disk")
+     driver = ET.SubElement(disk, "driver", name="qemu", type="raw")
+     source1 = ET.SubElement(disk, "source", file=machinelocation)
+     target = ET.SubElement(disk, "target", dev="vda", bus="virtio")
+     interface = ET.SubElement(devices, "interface", type="network")
+     source2 = ET.SubElement(interface, "source", network="default")
+     model = ET.SubElement(interface, "model", type="virtio")
+     graphics = ET.SubElement(devices, "graphics", type="vnc", port="-1", autoport="yes")
+     video = ET.SubElement(devices, "video")
+     model1 = ET.SubElement(video, "model", type="cirrus", vram="9216", heads="1")
+     serial = ET.SubElement(devices, "serial", type="pty")
+     console = ET.SubElement(devices, "console", type="pty")
+     input1 = ET.SubElement(devices, "input", type="mouse", bus="ps2")
+     input2 = ET.SubElement(devices, "input", type="keyboard", bus="ps2")
+     ET.ElementTree(root).write("/etc/libvirt/qemu/" + instance_name + ".xml")
+     xmlconfig = open("/etc/libvirt/qemu/" + instance_name + ".xml").read()
      domain = conn.defineXML(xmlconfig)
      try:
           domain.create()     
      except:
           raise Exception("We are ashamed to say but...")
      cursor = cnx.cursor()
-     cursor.execute('INSERT INTO machines VALUES (' + '"' + instance_name + '","' + num + '","' + memory + '","' + vcpu + '","' + storage + '","' + image + '","' + username + '","' + user_providen_ssh_key + '");')
+     cursor.execute('INSERT INTO machines VALUES (?,?,?,?,?,?,?,?);', (instance_name, num, image_name, username, storage, memory, vcpu, user_providen_ssh_key))
 def terminate(instance_name):
      dom = conn.lookupByName(instance_name)
      dom.destroy()
      dom.undefine(delete_storage=True)
      cursor = cnx.cursor()
-     cursor.execute('DELETE FROM seeds WHERE instance_name="' + instance_name + '";')
+     cursor.execute('DELETE FROM seeds WHERE instance_name=?;', (instance_name,))
 def stop(instance_name):
      try:
           dom = conn.lookupByName(instance_name)
