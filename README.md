@@ -4,7 +4,7 @@ You can create and terminate VMs, kubernetes clusters; you can manage your git p
 (We will provide updated images as frequent as possible.)
 And you can manage these things however you want(REST API, WEB interface, terminal CLI)
 # 📦 How to setup? 📦
-It is so easy to setup cloud-e just run the code below to pull and run cloud-e's docker container:
+It is so easy to setup cloud-e! Just run the code below to pull and run cloud-e's docker container:\n 
 `Under Development`
 
 
