@@ -152,35 +152,7 @@ runcmd:
     nodelocation = "/var/lib/cloudy/machines/ubuntu-k3c.raw"
     shutil.copyfile(image, nodelocation)
     os.rename(nodelocation, node_name + ".raw")
-    root = ET.Element("domain", type="qemu")
-    name1 = ET.SubElement(root, "name")
-    name1.text = node_name
-    uuid1 = ET.SubElement(root, "uuid")
-    uuid1.text = num
-    memory1 = ET.SubElement(root, "memory", unit="MB")
-    memory1.text = "512"
-    vcpu1 = ET.SubElement(root, "vcpu")
-    vcpu1.text = "1"
-    os1 = ET.SubElement(root, "os")
-    type1 = ET.SubElement(os1, "type")
-    type1.text = "hvm"
-    boot1 = ET.SubElement(os1, "boot", dev="hd")
-    smbios1 = ET.SubElement(os1, "smbios", mode="sysinfo")
-    sysinfo1 = ET.SubElement(root, "sysinfo", type="smbios")
-    bios1 = ET.SubElement(sysinfo1, "bios")
-    entry1 = ET.SubElement(bios1, "entry", name="vendor")
-    entry1.text = "Cloudy"
-    system1 = ET.SubElement(sysinfo1, "system")
-    entry2 = ET.SubElement(system1, "entry", name="manufacturer")
-    entry2.text = "Cloudy"
-    entry3 = ET.SubElement(system1, "entry", name="product")
-    entry3.text = "Cloudy Virtual Machine Delivery"
-    entry4 = ET.SubElement(system1, "entry", name="version")
-    entry4.text = "1.0.0"
-    entry5 = ET.SubElement(system1, "entry", name="serial")
-    entry5.text = "ds=nocloud-net;s=http://
-    entry6 = ET.SubElement(system1, "entry", name="uuid")
-    entry6.text = num
+    
     nodexml = """<domain type='qemu'>
       <name>""" + node_name + """</name>
       <uuid>""" + num + """ </uuid>
