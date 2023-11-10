@@ -53,8 +53,8 @@ def create(instance_name, image_name, username, storage, memory, vcpu, user_prov
      uuidnum = uuid.uuid4()
      num = str(uuidnum)
      image = image_name + "-cloudy"
-     source = "/var/lib/cloudy/images/" + image + ".raw"
-     machinelocation = "/var/lib/cloudy/machines/" + instance_name + ".raw"
+     source = "/var/lib/cloudy/images/" + image + ".qcow2"
+     machinelocation = "/var/lib/cloudy/machines/" + instance_name + ".qcow2"
      shutil.copyfile(source, machinelocation) 
      os.system("qemu-img resize " + machinelocation + " " + storage + "G")
      createseed(instance_name, username, user_providen_ssh_key)
