@@ -41,9 +41,9 @@ seedlocation = None
 def createseed(name, user, ssh_key):
     """
 
-    :param name:
-    :param user:
-    :param ssh_key:
+    :param name: param user:
+    :param ssh_key: 
+    :param user: 
 
     """
     cursor = cnx.cursor()
@@ -86,13 +86,13 @@ def create(
 ):
     """
 
-    :param instance_name:
-    :param image_name:
-    :param username:
-    :param storage:
-    :param memory:
-    :param vcpu:
-    :param user_providen_ssh_key:
+    :param instance_name: param image_name:
+    :param username: param storage:
+    :param memory: param vcpu:
+    :param user_providen_ssh_key: 
+    :param image_name: 
+    :param storage: 
+    :param vcpu: 
 
     """
     uuidnum = uuid.uuid4()
@@ -206,7 +206,7 @@ def create(
 def terminate(instance_name):
     """
 
-    :param instance_name:
+    :param instance_name: 
 
     """
     dom = conn.lookupByName(instance_name)
@@ -219,7 +219,7 @@ def terminate(instance_name):
 def stop(instance_name):
     """
 
-    :param instance_name:
+    :param instance_name: 
 
     """
     try:
@@ -232,7 +232,7 @@ def stop(instance_name):
 def start(instance_name):
     """
 
-    :param instance_name:
+    :param instance_name: 
 
     """
     try:
@@ -245,7 +245,7 @@ def start(instance_name):
 def restart(instance_name):
     """
 
-    :param instance_name:
+    :param instance_name: 
 
     """
     try:
