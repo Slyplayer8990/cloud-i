@@ -14,14 +14,18 @@ import libvirt
 import shutil
 import os
 import sqlite3
-cnx = sqlite3.connect('/var/lib/cloudy/cloudy.db')
+
+cnx = sqlite3.connect("/var/lib/cloudy/cloudy.db")
 
 
 def initdb():
     cursor = cnx.cursor()
     cursor.execute(
-        'CREATE TABLE IF NOT EXISTS seeds (name TEXT, userdata TEXT, metadata TEXT)')
-    cursor.execute('CREATE TABLE IF NOT EXISTS machines (name TEXT, uuid TEXT, memory TEXT, vcpu TEXT, storage TEXT, image TEXT, user TEXT, ssh_key TEXT, status TEXT)')
+        "CREATE TABLE IF NOT EXISTS seeds (name TEXT, userdata TEXT, metadata TEXT)"
+    )
+    cursor.execute(
+        "CREATE TABLE IF NOT EXISTS machines (name TEXT, uuid TEXT, memory TEXT, vcpu TEXT, storage TEXT, image TEXT, user TEXT, ssh_key TEXT, status TEXT)"
+    )
     cursor.close()
     cnx.commit()
 
@@ -35,31 +39,43 @@ seedlocation = None
 
 def createseed(name, user, ssh_key):
     cursor = cnx.cursor()
-    userdata = """#cloud-config
+    userdata = (
+        """#cloud-config
 groups:
   - admingroup: [root,sys]
   - cloud-users
 users:
-  - name: """ + user + """
+  - name: """
+        + user
+        + """
     groups: users, sudo
     ssh_authorized_keys: 
-    """ + "- " + ssh_key + """
+    """
+        + "- "
+        + ssh_key
+        + """
     sudo: ALL=(ALL) NOPASSWD:ALL
   - name: cloudy
     system: true
 """
-    metadata = """local-hosname: """ + name + """
+    )
+    metadata = (
+        """local-hosname: """
+        + name
+        + """
 network-interfaces: |
      auto eth0
      iface eth0 inet dhcp
      """
-    cursor.execute('INSERT INTO seeds VALUES (?,?,?);',
-                   (name, userdata, metadata))
+    )
+    cursor.execute("INSERT INTO seeds VALUES (?,?,?);", (name, userdata, metadata))
     cursor.close()
     cnx.commit()
 
 
-def create(instance_name, image_name, username, storage, memory, vcpu, user_providen_ssh_key):
+def create(
+    instance_name, image_name, username, storage, memory, vcpu, user_providen_ssh_key
+):
     uuidnum = uuid.uuid4()
     num = str(uuidnum)
     image = image_name + "-cloudy"
@@ -101,7 +117,10 @@ def create(instance_name, image_name, username, storage, memory, vcpu, user_prov
     systementry3.text = "1.0"
     systementry4 = ET.SubElement(system, "entry")
     systementry4.set("name", "serial")
-    systementry4.text = "ds=nocloud-net;s=http://master.cloud-e.local/cloudy/api/cmd/seeds/" + instance_name
+    systementry4.text = (
+        "ds=nocloud-net;s=http://master.cloud-e.local/cloudy/api/cmd/seeds/"
+        + instance_name
+    )
     clock = ET.SubElement(root, "clock")
     clock.set("offset", "utc")
     on_poweroff = ET.SubElement(root, "on_poweroff")
@@ -117,8 +136,7 @@ def create(instance_name, image_name, username, storage, memory, vcpu, user_prov
     disk.set("type", "file")
     disk.set("device", "disk")
     disksource = ET.SubElement(disk, "source")
-    disksource.set("file", "/var/lib/cloudy/machines/" +
-                   instance_name + ".qcow2")
+    disksource.set("file", "/var/lib/cloudy/machines/" + instance_name + ".qcow2")
     diskdriver = ET.SubElement(disk, "driver")
     diskdriver.set("name", "qemu")
     diskdriver.set("type", "qcow2")
@@ -151,8 +169,19 @@ def create(instance_name, image_name, username, storage, memory, vcpu, user_prov
     except:
         raise Exception("We are ashamed to say but...")
     cursor = cnx.cursor()
-    cursor.execute('INSERT INTO machines VALUES (?,?,?,?,?,?,?,?);', (instance_name,
-                   num, image_name, username, storage, memory, vcpu, user_providen_ssh_key))
+    cursor.execute(
+        "INSERT INTO machines VALUES (?,?,?,?,?,?,?,?);",
+        (
+            instance_name,
+            num,
+            image_name,
+            username,
+            storage,
+            memory,
+            vcpu,
+            user_providen_ssh_key,
+        ),
+    )
 
 
 def terminate(instance_name):
@@ -160,8 +189,7 @@ def terminate(instance_name):
     dom.destroy()
     dom.undefine(delete_storage=True)
     cursor = cnx.cursor()
-    cursor.execute('DELETE FROM seeds WHERE instance_name=?;',
-                   (instance_name,))
+    cursor.execute("DELETE FROM seeds WHERE instance_name=?;", (instance_name,))
 
 
 def stop(instance_name):
@@ -186,4 +214,5 @@ def restart(instance_name):
         dom.reset()
     except:
         raise Exception(
-            "Something bad happened... But i believe you can solve it... :)")
+            "Something bad happened... But i believe you can solve it... :)"
+        )
