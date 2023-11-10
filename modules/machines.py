@@ -20,6 +20,7 @@ cnx = sqlite3.connect("/var/lib/cloudy/cloudy.db")
 
 
 def initdb():
+    """ """
     cursor = cnx.cursor()
     cursor.execute(
         "CREATE TABLE IF NOT EXISTS seeds (name TEXT, userdata TEXT, metadata TEXT)"
@@ -39,6 +40,13 @@ seedlocation = None
 
 
 def createseed(name, user, ssh_key):
+    """
+
+    :param name: 
+    :param user: 
+    :param ssh_key: 
+
+    """
     cursor = cnx.cursor()
     userdata = (
         """#cloud-config
@@ -77,6 +85,17 @@ network-interfaces: |
 def create(
     instance_name, image_name, username, storage, memory, vcpu, user_providen_ssh_key
 ):
+    """
+
+    :param instance_name: 
+    :param image_name: 
+    :param username: 
+    :param storage: 
+    :param memory: 
+    :param vcpu: 
+    :param user_providen_ssh_key: 
+
+    """
     uuidnum = uuid.uuid4()
     num = str(uuidnum)
     image = image_name + "-cloudy"
@@ -186,6 +205,11 @@ def create(
 
 
 def terminate(instance_name):
+    """
+
+    :param instance_name: 
+
+    """
     dom = conn.lookupByName(instance_name)
     dom.destroy()
     dom.undefine(delete_storage=True)
@@ -194,6 +218,11 @@ def terminate(instance_name):
 
 
 def stop(instance_name):
+    """
+
+    :param instance_name: 
+
+    """
     try:
         dom = conn.lookupByName(instance_name)
         dom.destroy()
@@ -202,6 +231,11 @@ def stop(instance_name):
 
 
 def start(instance_name):
+    """
+
+    :param instance_name: 
+
+    """
     try:
         dom = conn.lookupByName(instance_name)
         dom.create()
@@ -210,6 +244,11 @@ def start(instance_name):
 
 
 def restart(instance_name):
+    """
+
+    :param instance_name: 
+
+    """
     try:
         dom = conn.lookupByName(instance_name)
         dom.reset()
