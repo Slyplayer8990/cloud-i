@@ -4,7 +4,6 @@
 # working on the alpine system to create a container that this program can run on
 # School is taking a lot of time so i am not able to work on this project as much as i want to
 # If you want to help me with this project please contact me on discord: @slyplayer8990
-
 import os
 import shutil
 import sqlite3
