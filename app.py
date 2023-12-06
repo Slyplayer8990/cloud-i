@@ -29,7 +29,7 @@ def creation():
         if not result is None:
             return {"alert": "Instance already exists!"}, 403
         else:
-            machines.create()
+            machines.create(git push)
             return {"result": "Successfully created the machine,now you can access it!"}
     else:
         return {"alert": "Missing information, could not process it!"}, 422
