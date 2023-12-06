@@ -16,7 +16,7 @@ def login():
         username=request.json["username"]
         password=request.json["password"]
         cursor = conndb.cursor()
-        cursor.execute(('SELECT * FROM users WHERE username=? AND password=?'), (username, password))
+        cursor.execute('SELECT * FROM users WHERE username=? AND password=?', (username, password))
     except:
         return {"status": "failed"}
 
