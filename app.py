@@ -15,8 +15,8 @@ def login():
     try:
         username=request.json["username"]
         password=request.json["password"]
-        cursor= conndb.cursor()
-        cursor.execute(('SELECT * FROM users WHERE username=? AND password=?'), (username, password))
+        cursor = conndb.cursor()
+        cursor.execute('SELECT * FROM users WHERE username=? AND password=?', (username, password))
     except:
         return {"status": "failed"}
 
@@ -24,22 +24,12 @@ def login():
 def creation():
     requiredjson = set(["instance_name", "image", "username", "storage", "memory", "vcpu", "access_key"])
     setrequest = set(request.json)
-
-    if requiredjson.issubset(setrequest):
-        instance_name = str(request.json["instance_name"])
-        image = str(request.json["image"])
-        username = str(request.json["username"])
-        storage = str(request.json["storage"])
-        memory = str(request.json["memory"])
-        vcpu = str(request.json["vcpu"])
-        access_key = str(request.json["access_key"])
-        cursor = conndb.cursor()
         cursor.execute('SELECT * FROM machines WHERE instance_name=?', (instance_name,))
         result = cursor.fetchone()
         if not result is None:
             return {"alert": "Instance already exists!"}, 403
         else:
-            machines.create(instance_name, image, username, storage, memory, vcpu, access_key)
+            machines.create(git push)
             return {"result": "Successfully created the machine,now you can access it!"}
     else:
         return {"alert": "Missing information, could not process it!"}, 422
