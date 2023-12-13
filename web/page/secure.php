@@ -6,8 +6,7 @@
     $user = $_POST["username"];
     $pass = $_POST["password"];
     $conn = new mysqli($host, $username, $password, $database);
-    $mycommand = "SELECT * FROM users WHERE username = '$user' AND password = '$pass'";
-    $result = $conn -> query($mycommand);
+    $result = $conn ->execute_query("SELECT * FROM users WHERE username = ? AND password = ?", [$user,$pass]);
     if ($result->num_rows > 0) {
         sleep(3);
         setcookie("cloudy[user]", $user, time()+3600);
