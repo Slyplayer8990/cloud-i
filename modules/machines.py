@@ -1,9 +1,4 @@
-# requirements: libvirt-clients libvirt-dev libvirt-daemon libvirt-daemon-system qemu-x86_64
-# trying to implement qcow2 instead of raw
-# trying to implement a better way to create the xml file
-# working on the alpine system to create a container that this program can run on
-# School is taking a lot of time so i am not able to work on this project as much as i want to
-# If you want to help me with this project please contact me on discord: @slyplayer8990
+
 import os
 import shutil
 import sqlite3
@@ -91,7 +86,8 @@ def create(instance_name, image_name, username, storage, memory, vcpu,
     machinelocation = "/var/lib/cloudy/machines/" + instance_name + ".qcow2"
     shutil.copyfile(source, machinelocation)
     os.system("qemu-img resize " + machinelocation + " " + storage + "G")
-    createseed(instance_name, username, user_providen_ssh_key)
+    createseed(instance_name, username, user_providen_ssh_key, cloudHost)
+
     root = ET.Element("domain")
     root.set("type", "kvm")
     name = ET.SubElement(root, "name")
@@ -126,7 +122,7 @@ def create(instance_name, image_name, username, storage, memory, vcpu,
     systementry4 = ET.SubElement(system, "entry")
     systementry4.set("name", "serial")
     systementry4.text = (
-        "ds=nocloud-net;s=http://master.cloud-e.local/cloudy/api/cmd/seeds/" +
+        "ds=nocloud-net;s=http://" + cloudHost + "/cloudy/api/cmd/seeds/" +
         instance_name)
     clock = ET.SubElement(root, "clock")
     clock.set("offset", "utc")
@@ -244,3 +240,4 @@ def restart(instance_name):
     except:
         raise Exception(
             "Something bad happened... But i believe you can solve it... :)")
+

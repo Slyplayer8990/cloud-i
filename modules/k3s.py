@@ -49,7 +49,8 @@ runcmd:
  - [ curl -sfL https://get.k3s.io | K3S_KUBECONFIG_MODE=\"644\" INSTALL_K3S_EXEC=\"server\" sh -s - ]
 """
   master_name = name + "_master"
-  metadata = """local-thosname: """ + master_name + """
+
+  metadata = """local-hostname: """ + master_name + """
 network-interfaces: |
      auto eth0
      iface eth0 inet dhcp
@@ -63,59 +64,93 @@ network-interfaces: |
   image = "/var/lib/cloudy/images/ubuntu-k3c.raw"
   masterlocation = "/var/lib/cloudy/machines" + master_name + ".raw"
   shutil.copyfile(image, masterlocation)
-  num = str(uuid.uuid4())
-  root = ET.Element("domain", type="qemu")
-  name1 = ET.SubElement(root, "name")
-  name1.text = master_name
-  uuid1 = ET.SubElement(root, "uuid")
-  uuid1.text = num
-  memory1 = ET.SubElement(root, "memory", unit="MB")
-  memory1.text = "512"
-  vcpu1 = ET.SubElement(root, "vcpu")
-  vcpu1.text = "1"
-  os1 = ET.SubElement(root, "os")
-  type1 = ET.SubElement(os1, "type")
-  type1.text = "hvm"
-  boot1 = ET.SubElement(os1, "boot", dev="hd")
-  smbios1 = ET.SubElement(os1, "smbios", mode="sysinfo")
-  sysinfo1 = ET.SubElement(root, "sysinfo", type="smbios")
-  bios1 = ET.SubElement(sysinfo1, "bios")
-  entry1 = ET.SubElement(bios1, "entry", name="vendor")
-  entry1.text = "Cloudy"
-  system1 = ET.SubElement(sysinfo1, "system")
-  entry2 = ET.SubElement(system1, "entry", name="manufacturer")
-  entry2.text = "Cloudy"
-  entry3 = ET.SubElement(system1, "entry", name="product")
-  entry3.text = "Cloudy Virtual Machine Delivery"
-  entry4 = ET.SubElement(system1, "entry", name="version")
-  entry4.text = "1.0.0"
-  entry5 = ET.SubElement(system1, "entry", name="serial")
-  entry5.text = "ds=nocloud-net;s=http://http://192.168.122.1:8080/cloudy/api/k3s/seeds/" + name + "/master/"
-  clock1 = ET.SubElement(sysinfo1, "clock", offset="utc")
-  on_poweroff1 = ET.SubElement(root, "on_poweroff")
-  on_poweroff1.text = "destroy"
-  on_reboot1 = ET.SubElement(root, "on_reboot")
-  on_reboot1.text = "restart"
-  on_crash1 = ET.SubElement(root, "on_crash")
-  on_crash1.text = "restart"
-  devices1 = ET.SubElement(root, "devices")
-  emulator1 = ET.SubElement(devices1, "emulator")
-  emulator1.text = "/usr/bin/kvm-spice"
-  disk1 = ET.SubElement(devices1, "disk", type="file", device="disk")
-  driver1 = ET.SubElement(disk1, "driver", name="qemu", type="raw")
-  source1 = ET.SubElement(disk1, "source", file=masterlocation)
-  target1 = ET.SubElement(disk1, "target", dev="vda", bus="virtio")
-  interface1 = ET.SubElement(devices1, "interface", type="network")
-  source2 = ET.SubElement(interface1, "source", network="default")
-  model1 = ET.SubElement(interface1, "model", type="virtio")
-  address1 = ET.SubElement(interface1, "address", type="pci", domain="0x0000", bus="0x00", slot="0x03", function="0x0")
-  serial1 = ET.SubElement(devices1, "serial", type="pty")
-  target2 = ET.SubElement(serial1, "target", port="0")
-  console1 = ET.SubElement(devices1, "console", type="pty")
-  target3 = ET.SubElement(console1, "target", type="serial", port="0")
-  ET.ElementTree(root).write("/etc/libvirt/qemu/" + master_name + ".xml")
-  masterxml = open("/etc/libvirt/qemu/" + master_name + ".xml", "r")
-  dom = cnx2.defineXML(masterxml)
+    uuidnum = uuid.uuid4()
+    num = str(uuidnum)
+    image = image_name + "-cloudy"
+    source = "/var/lib/cloudy/images/" + image + ".qcow2"
+    machinelocation = "/var/lib/cloudy/machines/" + master_name + ".qcow2"
+    shutil.copyfile(source, masterlocation)
+    os.system("qemu-img resize " + masterlocation + " " + storage + "G")
+    root = ET.Element("domain")
+    root.set("type", "kvm")
+    name = ET.SubElement(root, "name")
+    name.text = instance_name
+    memory = ET.SubElement(root, "memory")
+    memory.text = memory
+    vcpu = ET.SubElement(root, "vcpu")
+    vcpu.text = vcpu
+    os = ET.SubElement(root, "os")
+    type = ET.SubElement(os, "type")
+    type.text = "hvm"
+    boot = ET.SubElement(os, "boot")
+    boot.set("dev", "hd")
+    smbios = ET.SubElement(os, "smbios")
+    smbios.set
+    sysinfo = ET.SubElement(root, "sysinfo")
+    sysinfo.set("type", "smbios")
+    bios = ET.SubElement(root, "bios")
+    biosentry = ET.SubElement(bios, "entry")
+    biosentry.set("name", "vendor")
+    biosentry.text = "Cloudy"
+    system = ET.SubElement(root, "system")
+    systementry = ET.SubElement(system, "entry")
+    systementry.set("name", "manufacturer")
+    systementry.text = "Cloudy"
+    systementry2 = ET.SubElement(system, "entry")
+    systementry2.set("name", "product")
+    systementry2.text = "Cloudy Virtual Machine"
+    systementry3 = ET.SubElement(system, "entry")
+    systementry3.set("name", "version")
+    systementry3.text = "1.0"
+    systementry4 = ET.SubElement(system, "entry")
+    systementry4.set("name", "serial")
+    systementry4.text = (
+        "ds=nocloud-net;s=http://"+ cloudHost +"/cloudy/api/cmd/seeds/" +
+        instance_name)
+    clock = ET.SubElement(root, "clock")
+    clock.set("offset", "utc")
+    on_poweroff = ET.SubElement(root, "on_poweroff")
+    on_poweroff.text = "destroy"
+    on_reboot = ET.SubElement(root, "on_reboot")
+    on_reboot.text = "restart"
+    on_crash = ET.SubElement(root, "on_crash")
+    on_crash.text = "destroy"
+    devices = ET.SubElement(root, "devices")
+    emulator = ET.SubElement(devices, "emulator")
+    emulator.text = "/usr/bin/qemu-system-x86_64"
+    disk = ET.SubElement(devices, "disk")
+    disk.set("type", "file")
+    disk.set("device", "disk")
+    disksource = ET.SubElement(disk, "source")
+    disksource.set("file",
+                   "/var/lib/cloudy/machines/" + master_name + ".qcow2")
+    diskdriver = ET.SubElement(disk, "driver")
+    diskdriver.set("name", "qemu")
+    diskdriver.set("type", "qcow2")
+    target = ET.SubElement(disk, "target")
+    target.set("dev", "hda")
+    interface = ET.SubElement(devices, "interface")
+    interface.set("type", "bridge")
+    interface_source = ET.SubElement(interface, "source")
+    interface_source.set("bridge", "virbr0")
+    interface_model = ET.SubElement(interface, "model")
+    interface_model.set("type", "virtio")
+    interface_address = ET.SubElement(interface, "address")
+    interface_address.set("type", "pci")
+    interface_address.set("domain", "0x0000")
+    interface_address.set("bus", "0x00")
+    interface_address.set("slot", "0x03")
+    interface_address.set("function", "0x0")
+    serial = ET.SubElement(devices, "serial")
+    serial.set("type", "pty")
+    serial_target = ET.SubElement(serial, "target")
+    serial_target.set("type", "isa-serial")
+    serial_target.set("port", "0")
+    serial_target_model = ET.SubElement(serial_target, "model")
+    serial_target_model.set("name", "isa-serial")
+    ET.ElementTree(root).write("/etc/libvirt/qemu/" + master_name + ".xml")
+    xmlconfig = open("/etc/libvirt/qemu/" + master_name + ".xml").read()
+    domain = conn.defineXML(xmlconfig)
   try:
     dom.create()     
   except:
@@ -152,53 +187,96 @@ runcmd:
     nodelocation = "/var/lib/cloudy/machines/ubuntu-k3c.raw"
     shutil.copyfile(image, nodelocation)
     os.rename(nodelocation, node_name + ".raw")
-    
-    nodexml = """<domain type='qemu'>
-      <name>""" + node_name + """</name>
-      <uuid>""" + num + """ </uuid>
-      <memory unit="MB">512</memory>
-      <vcpu>1</vcpu>
-      <os>
-        <type>hvm</type>
-        <boot dev='hd'/>
-        <smbios mode='sysinfo'/>
-      </os>
-      <sysinfo type='smbios'>
-      <bios>
-        <entry name='vendor'>Cloudy</entry>
-      </bios>
-      <system>
-        <entry name='manufacturer'>Cloudy</entry>
-        <entry name='product'>Cloudy Virtual Machine Delivery</entry>
-        <entry name='version'>1.0.0</entry>
-        <entry name='serial'>ds=nocloud-net;s=http://192.168.122.1:8080/cloudy/api/k3s/seeds/""" + name + "/node/" + node_name + """</entry>
-      </system>
-      <clock offset='utc'/>
-      <on_poweroff>destroy</on_poweroff>
-      <on_reboot>restart</on_reboot>
-      <on_crash>restart</on_crash>
-      <devices>
-        <emulator>/usr/bin/qemu-system-x86_64</emulator>
-        <disk type='file' device='disk'>
-          <source file='""" + nodelocation + """'/>
-          <driver name='qemu' type='raw'/>
-          <target dev='hda'/>
-        </disk>
-        <interface type='bridge'>
-          <source bridge='virbr0'/>
-          <model type='virtio'/>
-          <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
-        </interface>
-        <serial type="pty">
-          <target type="isa-serial" port="0">
-            <model name="isa-serial"/>
-          </target>
-        </serial>
-      </devices>
-    </domain>"""
-    dom = cnx2.defineXML(nodexml)
+
+
+    uuidnum = uuid.uuid4()
+    num = str(uuidnum)
+    source = "/var/lib/cloudy/images/ubuntu-k3-node.qcow2"
+    machinelocation = "/var/lib/cloudy/machines/" + node_name + ".qcow2"
+    shutil.copyfile(source, nodelocation)
+    os.system("qemu-img resize " + masterlocation + " " + storage + "G")
+    root = ET.Element("domain")
+    root.set("type", "kvm")
+    name = ET.SubElement(root, "name")
+    name.text = instance_name
+    memory = ET.SubElement(root, "memory")
+    memory.text = memory
+    vcpu = ET.SubElement(root, "vcpu")
+    vcpu.text = vcpu
+    os = ET.SubElement(root, "os")
+    type = ET.SubElement(os, "type")
+    type.text = "hvm"
+    boot = ET.SubElement(os, "boot")
+    boot.set("dev", "hd")
+    smbios = ET.SubElement(os, "smbios")
+    smbios.set
+    sysinfo = ET.SubElement(root, "sysinfo")
+    sysinfo.set("type", "smbios")
+    bios = ET.SubElement(root, "bios")
+    biosentry = ET.SubElement(bios, "entry")
+    biosentry.set("name", "vendor")
+    biosentry.text = "Cloudy"
+    system = ET.SubElement(root, "system")
+    systementry = ET.SubElement(system, "entry")
+    systementry.set("name", "manufacturer")
+    systementry.text = "Cloudy"
+    systementry2 = ET.SubElement(system, "entry")
+    systementry2.set("name", "product")
+    systementry2.text = "Cloudy Virtual Machine"
+    systementry3 = ET.SubElement(system, "entry")
+    systementry3.set("name", "version")
+    systementry3.text = "1.0"
+    systementry4 = ET.SubElement(system, "entry")
+    systementry4.set("name", "serial")
+    systementry4.text = (
+        "ds=nocloud-net;s=http://"+ cloudHost +"/cloudy/api/cmd/seeds/" +
+        node_name)
+    clock = ET.SubElement(root, "clock")
+    clock.set("offset", "utc")
+    on_poweroff = ET.SubElement(root, "on_poweroff")
+    on_poweroff.text = "destroy"
+    on_reboot = ET.SubElement(root, "on_reboot")
+    on_reboot.text = "restart"
+    on_crash = ET.SubElement(root, "on_crash")
+    on_crash.text = "destroy"
+    devices = ET.SubElement(root, "devices")
+    emulator = ET.SubElement(devices, "emulator")
+    emulator.text = "/usr/bin/qemu-system-x86_64"
+    disk = ET.SubElement(devices, "disk")
+    disk.set("type", "file")
+    disk.set("device", "disk")
+    disksource = ET.SubElement(disk, "source")
+    disksource.set("file",
+                   "/var/lib/cloudy/machines/" + instance_name + ".qcow2")
+    diskdriver = ET.SubElement(disk, "driver")
+    diskdriver.set("name", "qemu")
+    diskdriver.set("type", "qcow2")
+    target = ET.SubElement(disk, "target")
+    target.set("dev", "hda")
+    interface = ET.SubElement(devices, "interface")
+    interface.set("type", "bridge")
+    interface_source = ET.SubElement(interface, "source")
+    interface_source.set("bridge", "virbr0")
+    interface_model = ET.SubElement(interface, "model")
+    interface_model.set("type", "virtio")
+    interface_address = ET.SubElement(interface, "address")
+    interface_address.set("type", "pci")
+    interface_address.set("domain", "0x0000")
+    interface_address.set("bus", "0x00")
+    interface_address.set("slot", "0x03")
+    interface_address.set("function", "0x0")
+    serial = ET.SubElement(devices, "serial")
+    serial.set("type", "pty")
+    serial_target = ET.SubElement(serial, "target")
+    serial_target.set("type", "isa-serial")
+    serial_target.set("port", "0")
+    serial_target_model = ET.SubElement(serial_target, "model")
+    serial_target_model.set("name", "isa-serial")
+    ET.ElementTree(root).write("/etc/libvirt/qemu/" + node_name + ".xml")
+    xmlconfig = open("/etc/libvirt/qemu/" + node_name + ".xml").read()
+    domain = conn.defineXML(xmlconfig)
     try:
-      dom.create()
+      domain.create()
     except:
       print("We couldn't create the node!")
       raise Exception("We couldn't create the node!")
