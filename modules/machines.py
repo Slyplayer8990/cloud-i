@@ -1,3 +1,4 @@
+
 import os
 import shutil
 import sqlite3
@@ -86,6 +87,7 @@ def create(instance_name, image_name, username, storage, memory, vcpu,
     shutil.copyfile(source, machinelocation)
     os.system("qemu-img resize " + machinelocation + " " + storage + "G")
     createseed(instance_name, username, user_providen_ssh_key, cloudHost)
+
     root = ET.Element("domain")
     root.set("type", "kvm")
     name = ET.SubElement(root, "name")
@@ -238,3 +240,4 @@ def restart(instance_name):
     except:
         raise Exception(
             "Something bad happened... But i believe you can solve it... :)")
+

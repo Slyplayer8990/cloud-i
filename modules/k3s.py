@@ -49,6 +49,7 @@ runcmd:
  - [ curl -sfL https://get.k3s.io | K3S_KUBECONFIG_MODE=\"644\" INSTALL_K3S_EXEC=\"server\" sh -s - ]
 """
   master_name = name + "_master"
+
   metadata = """local-hostname: """ + master_name + """
 network-interfaces: |
      auto eth0
@@ -122,7 +123,7 @@ network-interfaces: |
     disk.set("device", "disk")
     disksource = ET.SubElement(disk, "source")
     disksource.set("file",
-                   "/var/lib/cloudy/machines/" + instance_name + ".qcow2")
+                   "/var/lib/cloudy/machines/" + master_name + ".qcow2")
     diskdriver = ET.SubElement(disk, "driver")
     diskdriver.set("name", "qemu")
     diskdriver.set("type", "qcow2")
@@ -186,6 +187,7 @@ runcmd:
     nodelocation = "/var/lib/cloudy/machines/ubuntu-k3c.raw"
     shutil.copyfile(image, nodelocation)
     os.rename(nodelocation, node_name + ".raw")
+
 
     uuidnum = uuid.uuid4()
     num = str(uuidnum)
@@ -273,9 +275,8 @@ runcmd:
     ET.ElementTree(root).write("/etc/libvirt/qemu/" + node_name + ".xml")
     xmlconfig = open("/etc/libvirt/qemu/" + node_name + ".xml").read()
     domain = conn.defineXML(xmlconfig)
-    dom = cnx2.defineXML(nodexml)
     try:
-      dom.create()
+      domain.create()
     except:
       print("We couldn't create the node!")
       raise Exception("We couldn't create the node!")
@@ -293,3 +294,4 @@ def terminate_k3s_cluster(name):
     cnx2.lookupByName(name + "_node_" + str(i)).undefine(delete_storage=True)
   cursor.execute('DELETE FROM k3s_clusters WHERE cluster_name = "' + name + '"')
   cursor.execute('DELETE FROM k3s_nodes WHERE cluster_name = "' + name + '"')
+
