@@ -5,11 +5,11 @@ import uuid
 import os
 import xml.etree.ElementTree as ET
 import psycopg2
-cnx = psycopg2.connect(database="db_name",
-                        host="db_host",
-                        user="db_user",
-                        password="db_pass",
-                        port="db_port")
+cnx = psycopg2.connect(database="cloudy",
+                        host="127.0.0.1",
+                        user="cloudy",
+                        password="cloudy123",
+                        port="5432")
 def initdb():
   cursor = cnx.cursor()
   cursor.execute('CREATE TABLE IF NOT EXISTS k3s_clusters (cluster_name TEXT, numberof_nodes INTEGER, cluster_ip TEXT, cluster_token TEXT)')
