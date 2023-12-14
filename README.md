@@ -4,7 +4,7 @@ You can create and terminate VMs, kubernetes clusters; you can manage your git p
 (We will provide updated images as frequent as possible.)
 And you can manage these things however you want(REST API, WEB interface, terminal CLI)
 ![Static Badge](https://img.shields.io/badge/Docker-Repository-03fcdf?link=https://hub.docker.com/r/slyplayer8990/cloud-v)
-![Static Badge](https://github.com/slyplayer8990/cloud-v/actions/workflows/docker-image.yml/badge.svg"></img>)
+![Static Badge](https://github.com/slyplayer8990/cloud-v/actions/workflows/docker-image.yml/badge.svg)
 # 📦 How to setup? 📦
 There are many ways to setup cloud-v. Like:
 1-Using our debian distro.
