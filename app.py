@@ -5,10 +5,15 @@ import sys
 sys.path.insert(0, "./modules")
 import schedule
 import time
-import sqlite3
 import machines
+import psycopg2
 
-conndb = sqlite3.connect('/var/lib/cloudy/cloudy.db')
+conn = psycopg2.connect(database="cloudy",
+                        host="127.0.0.1",
+                        user="cloudy",
+                        password="cloudy123",
+                        port="5432")
+
 app = Flask(__name__)
 @app.route("/cloudy/api/login",methods=["POST"])
 def login():

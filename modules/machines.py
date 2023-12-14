@@ -1,16 +1,19 @@
 
 import os
 import shutil
-import sqlite3
 import sys
 import uuid
 import xml.etree.ElementTree as ET
 from imp import source_from_cache
 from venv import create
-
 import libvirt
+import psycopg2
 
-cnx = sqlite3.connect("/var/lib/cloudy/cloudy.db")
+conn = psycopg2.connect(database="cloudy",
+                        host="127.0.0.1",
+                        user="cloudy",
+                        password="cloudy123",
+                        port="5432")
 
 
 def initdb():
