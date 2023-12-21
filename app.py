@@ -62,7 +62,7 @@ def seeds_metadata(instance_name):
         meta_data = result[2]
         return meta_data
     else:
-        return {"alert": "This isn't a cloudy instance"}, 403
+        return {"alert": "You aren't a cloudy instance"}, 403
     cursor.close()
 @app.route("/cloudy/api/machines/seeds/<instance_name>/vendor-data",methods=["GET"])
 def seeds_vendor_data(instance_name):
@@ -78,7 +78,7 @@ def termination():
             return {"alert": "This isn't a cloudy instance"}, 404
         return {"result": "Succesfully terminated machine!"}, 200
     else:
-        return {"alert": "Missing object, couldn't process it!"}
+        return {"alert": "Missing object, couldn't process it!"}, 422
 @app.route("/cloudy/api/k3c/seeds/<cluster_name>/maestro/meta-data", methods=["GET"])
 def k3c_metadata():
     print(request.headers["User-Agent"])
