@@ -74,7 +74,7 @@ network-interfaces: |
     source = "/var/lib/cloudy/images/" + image + ".qcow2"
     machinelocation = "/var/lib/cloudy/machines/" + master_name + ".qcow2"
     shutil.copyfile(source, masterlocation)
-    os.system("qemu-img resize " + masterlocation + " " + storage + "G")
+    os.system("qemu-img resize " + masterlocation + " 30G")
     root = ET.Element("domain")
     root.set("type", "kvm")
     name = ET.SubElement(root, "name")
@@ -198,7 +198,7 @@ runcmd:
     source = "/var/lib/cloudy/images/ubuntu-k3-node.qcow2"
     machinelocation = "/var/lib/cloudy/machines/" + node_name + ".qcow2"
     shutil.copyfile(source, nodelocation)
-    os.system("qemu-img resize " + masterlocation + " " + storage + "G")
+    os.system("qemu-img resize " + masterlocation + " 30G")
     root = ET.Element("domain")
     root.set("type", "kvm")
     name = ET.SubElement(root, "name")

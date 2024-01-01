@@ -88,7 +88,8 @@ def create(instance_name, image_name, username, storage, memory, vcpu,
     source = "/var/lib/cloudy/images/" + image + ".qcow2"
     machinelocation = "/var/lib/cloudy/machines/" + instance_name + ".qcow2"
     shutil.copyfile(source, machinelocation)
-    os.system("qemu-img resize " + machinelocation + " " + storage + "G")
+    storage1 = int(storage)
+    os.system("qemu-img resize " + machinelocation + " " + storage1 + "G")
     createseed(instance_name, username, user_providen_ssh_key, cloudHost)
 
     root = ET.Element("domain")
