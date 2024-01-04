@@ -1,0 +1,40 @@
+@viewport {
+ width: device-width;
+}
+header {
+  width: device-with;
+  height: 100px;
+  background-color: #fff;
+}
+body {
+	padding: 0px;
+	margin: 0px;
+}
+
+img {
+  margin: 0 auto;
+}
+
+nav {
+  display: flex;
+  width: 100%;
+  justify-content: left-to-right;
+  margin-top: 20px;
+  flex-wrap: wrap;
+  position: absolute;
+}
+
+a {
+  text-decoration: none;
+  color: #000;
+  font-size: 16px;
+}
+.menu_banner {
+	display: flex;
+	width: 24%;
+	padding: 8px;
+	height: 16px;
+	display: flex;
+	border: 1px solid black;
+	flex-wrap: wrap;
+}
