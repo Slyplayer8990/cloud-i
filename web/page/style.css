@@ -18,7 +18,7 @@ img {
 nav {
   display: flex;
   width: 100%;
-  justify-content: left-to-right;
+  text-align: justify;
   margin-top: 20px;
   flex-wrap: wrap;
   position: absolute;
@@ -38,3 +38,9 @@ a {
 	border: 1px solid black;
 	flex-wrap: wrap;
 }
+ .slideshow-container {
+  margin-top: 36px
+}
+.prev {}
+.next {}
+.three-dots {}
