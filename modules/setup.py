@@ -7,3 +7,6 @@ setup(
  ext_modules=cythonize("k3s.pyx"),
  ext_modules=cythonize("storage.pyx")
 )
+f = open("../secret.txt", "x")
+
+f.write()

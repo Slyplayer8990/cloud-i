@@ -7,14 +7,19 @@ import schedule
 import time
 import machines
 import psycopg2
-
+from flask import Flask, flash, request, redirect, url_for
+from werkzeug.utils import secure_filename
 conn = psycopg2.connect(database="cloudy",
                         host="127.0.0.1",
                         user="cloudy",
                         password="cloudy123",
-                        port="5432")
+                        port="5432",
+                        buffered=true)
 
 app = Flask(__name__)
+UPLOAD_FOLDER = '/var/cloudy/buckets'
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 @app.route("/cloudy/api/login",methods=["POST"])
 def login():
     try:
@@ -94,11 +99,20 @@ def k3c_vendordata():
     print(request.headers["User-Agent"])
     return """vendor_data:
     enabled: False"""
-@app.route("/cloudy/api/s2/<user>/<bucket>/", methods=["GET", "POST"])
-def file_operations(user,bucket):
-    if request.method == "POST":
-        user = request.headers["Cookies"]
-
-
-
+@app.route("/cloudy/api/s2/<user>/<bucket>/", methods=["POST"])
+def file_upload(user,bucket):
+    if 'file' not in request.files:
+        flash('No file part')
+        return {"status": "Failed because of filetype=None"}
+    file = request.files['file']
+    if file.filename == '':
+        flash('No selected file')
+        return redirect(request.url)
+    filename = secure_filename(file.filename)
+    file.save(os.path.join(app.config['UPLOAD_FOLDER'] + "/" + user + "/" + bucket + "/" + filename))
+    return {"status: Complete"}
+@app.route("/cloudy/api/s2/<user>/<bucket>/<file>", methods=["POST"])
+def file_download(user,bucket,file):
+    return send_file(app.config["UPLOAD_FOLDER"] + "/" + user + "/" + bucket + "/" + file)
 app.run(host="0.0.0.0", port="47470")
+

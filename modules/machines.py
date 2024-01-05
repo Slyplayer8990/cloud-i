@@ -13,7 +13,8 @@ conn = psycopg2.connect(database="cloudy",
                         host="127.0.0.1",
                         user="cloudy",
                         password="cloudy123",
-                        port="5432")
+                        port="5432",
+                        buffered=true)
 
 
 def initdb():
@@ -88,7 +89,8 @@ def create(instance_name, image_name, username, storage, memory, vcpu,
     source = "/var/lib/cloudy/images/" + image + ".qcow2"
     machinelocation = "/var/lib/cloudy/machines/" + instance_name + ".qcow2"
     shutil.copyfile(source, machinelocation)
-    os.system("qemu-img resize " + machinelocation + " " + storage + "G")
+    storage1 = int(storage)
+    os.system("qemu-img resize " + machinelocation + " " + storage1 + "G")
     createseed(instance_name, username, user_providen_ssh_key, cloudHost)
 
     root = ET.Element("domain")

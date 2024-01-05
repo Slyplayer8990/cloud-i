@@ -9,7 +9,8 @@ cnx = psycopg2.connect(database="cloudy",
                         host="127.0.0.1",
                         user="cloudy",
                         password="cloudy123",
-                        port="5432")
+                        port="5432",
+                        buffered=true)
 def initdb():
   cursor = cnx.cursor()
   cursor.execute('CREATE TABLE IF NOT EXISTS k3s_clusters (cluster_name TEXT, numberof_nodes INTEGER, cluster_ip TEXT, cluster_token TEXT)')
@@ -74,7 +75,7 @@ network-interfaces: |
     source = "/var/lib/cloudy/images/" + image + ".qcow2"
     machinelocation = "/var/lib/cloudy/machines/" + master_name + ".qcow2"
     shutil.copyfile(source, masterlocation)
-    os.system("qemu-img resize " + masterlocation + " " + storage + "G")
+    os.system("qemu-img resize " + masterlocation + " 30G")
     root = ET.Element("domain")
     root.set("type", "kvm")
     name = ET.SubElement(root, "name")
@@ -198,7 +199,7 @@ runcmd:
     source = "/var/lib/cloudy/images/ubuntu-k3-node.qcow2"
     machinelocation = "/var/lib/cloudy/machines/" + node_name + ".qcow2"
     shutil.copyfile(source, nodelocation)
-    os.system("qemu-img resize " + masterlocation + " " + storage + "G")
+    os.system("qemu-img resize " + masterlocation + " 30G")
     root = ET.Element("domain")
     root.set("type", "kvm")
     name = ET.SubElement(root, "name")
