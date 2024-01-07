@@ -7,7 +7,11 @@ import schedule
 import time
 import machines
 import psycopg2
-
+import docker
+from flask import Flask, flash, request, redirect, url_for
+from werkzeug.utils import secure_filename
+import asyncio
+client = docker.from_env()
 conn = psycopg2.connect(database="cloudy",
                         host="127.0.0.1",
                         user="cloudy",
@@ -15,6 +19,8 @@ conn = psycopg2.connect(database="cloudy",
                         port="5432")
 
 app = Flask(__name__)
+UPLOAD_FOLDER = '/var/cloudy/buckets'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 @app.route("/cloudy/api/login",methods=["POST"])
 def login():
     try:
@@ -34,7 +40,7 @@ def creation():
         if not result is None:
             return {"alert": "Instance already exists!"}, 403
         else:
-            machines.create(git push)
+            machines.create()
             return {"result": "Successfully created the machine,now you can access it!"}
     else:
         return {"alert": "Missing information, could not process it!"}, 422
@@ -94,11 +100,27 @@ def k3c_vendordata():
     print(request.headers["User-Agent"])
     return """vendor_data:
     enabled: False"""
-@app.route("/cloudy/api/s2/<user>/<bucket>/", methods=["GET", "POST"])
-def file_operations(user,bucket):
-    if request.method == "POST":
-        user = request.headers["Cookies"]
-
-
-
+@app.route("/cloudy/api/s2/<user>/<bucket>/", methods=["POST"])
+def file_upload(user,bucket):
+    if 'file' not in request.files:
+        flash('No file part')
+        return {"status": "Failed because of filetype=None"}
+    file = request.files['file']
+    if file.filename == '':
+        flash('No selected file')
+        return redirect(request.url)
+    filename = secure_filename(file.filename)
+    file.save(os.path.join(app.config['UPLOAD_FOLDER'] + "/" + user + "/" + bucket + "/" + filename))
+    return {"status: Complete"}
+@app.route("/cloudy/api/s2/<user>/<bucket>/<file>", methods=["POST"])
+def file_download(user,bucket,file):
+    return send_file(app.config["UPLOAD_FOLDER"] + "/" + user + "/" + bucket + "/" + file)
+@app.route("/cloudy/api/ecs/run", methods=["POST"])
+def docker_run():
+    if request.json["command"] is not None:
+        client.containers.run(request.json["image"], request.json["command"])
+        return {"status": "Completed, you can see the logs on http://hostname/cloudy/api/docker/logs/<container>"}
+    if request.json["command"] is None:
+        client.containers.run(requests.json["image"], detach=True)
+        return {"status": "Started, you can see the logs on http://hostname/cloudy/api/docker/logs/<container>""}
 app.run(host="0.0.0.0", port="47470")
