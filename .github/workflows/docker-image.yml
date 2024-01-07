@@ -13,7 +13,7 @@ jobs:
       uses: actions/checkout@v3
       
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag slyplayer8990/cloud-v:debug
+      run: docker build . --file Dockerfile --tag slyplayer8990/cloud-i:debug
       
     - name: Log in to Docker Hub
       uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
@@ -22,4 +22,4 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
     - name: Push Container to Registry
-      run: docker push slyplayer8990/cloud-v:debug
+      run: docker push slyplayer8990/cloud-i:debug
