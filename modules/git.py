@@ -4,7 +4,8 @@ conn = psycopg2.connect(database="cloudy",
                         host="127.0.0.1",
                         user="cloudy",
                         password="cloudy123",
-                        port="5432")
+                        port="5432",
+                        buffered=true)
 cursor = conn.cursor()
 cursor.execute("CREATE TABLE IF NOT EXISTS repository (
     name    VARCHAR(16),
