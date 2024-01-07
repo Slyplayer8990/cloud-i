@@ -1,22 +1,18 @@
 from flask import Flask, request, jsonify, send_file
 import os
 import json
-import sys 
+import sys
 sys.path.insert(0, "./modules")
 import schedule
 import time
 import machines
 import psycopg2
-<<<<<<< HEAD
 import docker
 from flask import Flask, flash, request, redirect, url_for
 from werkzeug.utils import secure_filename
 import asyncio
 client = docker.from_env()
-=======
-from flask import Flask, flash, request, redirect, url_for
-from werkzeug.utils import secure_filename
->>>>>>> 9bf482744c999cf3e9f3e9223b5a9f2b0855daeb
+
 conn = psycopg2.connect(database="cloudy",
                         host="127.0.0.1",
                         user="cloudy",
@@ -26,10 +22,6 @@ conn = psycopg2.connect(database="cloudy",
 
 app = Flask(__name__)
 UPLOAD_FOLDER = '/var/cloudy/buckets'
-<<<<<<< HEAD
-=======
-
->>>>>>> 9bf482744c999cf3e9f3e9223b5a9f2b0855daeb
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 @app.route("/cloudy/api/login",methods=["POST"])
 def login():
@@ -125,7 +117,6 @@ def file_upload(user,bucket):
 @app.route("/cloudy/api/s2/<user>/<bucket>/<file>", methods=["POST"])
 def file_download(user,bucket,file):
     return send_file(app.config["UPLOAD_FOLDER"] + "/" + user + "/" + bucket + "/" + file)
-<<<<<<< HEAD
 @app.route("/cloudy/api/ecs/run", methods=["POST"])
 def docker_run():
     if request.json["command"] is not None:
@@ -133,8 +124,6 @@ def docker_run():
         return {"status": "Completed, you can see the logs on http://hostname/cloudy/api/docker/logs/<container>"}
     if request.json["command"] is None:
         client.containers.run(requests.json["image"], detach=True)
-        return {"status": "Started, you can see the logs on http://hostname/cloudy/api/docker/logs/<container>""}
-=======
->>>>>>> 9bf482744c999cf3e9f3e9223b5a9f2b0855daeb
+        return {"status": "Started, you can see the logs on http://hostname/cloudy/api/docker/logs/<container>"}
 app.run(host="0.0.0.0", port="47470")
 
